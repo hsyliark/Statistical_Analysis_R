@@ -24,8 +24,8 @@ x <- 0:n
 (dbinom(2,size=n,prob=p))
 (dbinom(4,size=n,prob=p))
 (px <- dbinom(x,size=n,prob=p))
-plot(x,px,type="s",xlab="성공 횟수(x)",ylab="확률(P[X=x])",
-     main="B(6,1/3)")
+plot(x,px,type="h",xlab="성공 횟수(x)",ylab="확률(P[X=x])",
+     main="B(6,1/3)",col="blue",lwd=10)
 pbinom(2,size=n,prob=p)
 pbinom(4,size=n,prob=p)
 pbinom(4,size=n,prob=p) - pbinom(2,size=n,prob=p)
