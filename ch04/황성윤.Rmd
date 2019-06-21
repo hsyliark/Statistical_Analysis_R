@@ -1,0 +1,169 @@
+---
+title: "6월 21일 과제"
+author: "황 성 윤"
+date: '2019 6 21 '
+output: html_document
+---
+
+
+# Central Limit Theorem
+
+## Chi-square Distribution
+
+```{r}
+set.seed(123)
+df <- 5
+x <- seq(0,100,by=0.001)
+n <- 1000
+chi.5.mean <- rep(NA,n)
+chi.20.mean <- rep(NA,n)
+chi.40.mean <- rep(NA,n)
+chi.160.mean <- rep(NA,n)
+
+for (i in 1:n) {
+  chi.5.mean[i] <- mean(rchisq(5,df))
+  chi.20.mean[i] <- mean(rchisq(20,df))
+  chi.40.mean[i] <- mean(rchisq(40,df))
+  chi.160.mean[i] <- mean(rchisq(160,df))
+}
+
+options(digits=4)
+c(mean(chi.5.mean),sd(chi.5.mean))
+c(mean(chi.20.mean),sd(chi.20.mean))
+c(mean(chi.40.mean),sd(chi.40.mean))
+c(mean(chi.160.mean),sd(chi.160.mean))
+
+par(mfrow=c(2,2))
+
+hist(chi.5.mean,prob=T,main="Chi-square with n=5",
+     col="yellow",border="red")
+x1 <- seq(min(chi.5.mean),max(chi.5.mean),length=1000)
+y1 <- dnorm(x1,mean=5,sd=sqrt(10)/sqrt(5))
+lines(x1,y1,lty=2,lwd=2,col="blue")
+
+hist(chi.20.mean,prob=T,main="Chi-square with n=20",
+     col="yellow",border="red")
+x2 <- seq(min(chi.20.mean),max(chi.20.mean),length=1000)
+y2 <- dnorm(x2,mean=5,sd=sqrt(10)/sqrt(20))
+lines(x2,y2,lty=2,lwd=2,col="blue")
+
+hist(chi.40.mean,prob=T,main="Chi-square with n=40",
+     col="yellow",border="red")
+x3 <- seq(min(chi.40.mean),max(chi.40.mean),length=1000)
+y3 <- dnorm(x3,mean=5,sd=sqrt(10)/sqrt(40))
+lines(x3,y3,lty=2,lwd=2,col="blue")
+
+hist(chi.160.mean,prob=T,main="Chi-square with n=160",
+     col="yellow",border="red")
+x4 <- seq(min(chi.160.mean),max(chi.160.mean),length=1000)
+y4 <- dnorm(x4,mean=5,sd=sqrt(10)/sqrt(160))
+lines(x4,y4,lty=2,lwd=2,col="blue")
+```
+
+
+## T Distribution
+
+```{r}
+set.seed(123)
+df <- 10
+x <- seq(-100,100,by=0.001)
+n <- 1000
+t.5.mean <- rep(NA,n)
+t.20.mean <- rep(NA,n)
+t.40.mean <- rep(NA,n)
+t.160.mean <- rep(NA,n)
+
+for (i in 1:n) {
+  t.5.mean[i] <- mean(rt(5,df))
+  t.20.mean[i] <- mean(rt(20,df))
+  t.40.mean[i] <- mean(rt(40,df))
+  t.160.mean[i] <- mean(rt(160,df))
+}
+
+options(digits=4)
+c(mean(t.5.mean),sd(t.5.mean))
+c(mean(t.20.mean),sd(t.20.mean))
+c(mean(t.40.mean),sd(t.40.mean))
+c(mean(t.160.mean),sd(t.160.mean))
+
+par(mfrow=c(2,2))
+
+hist(t.5.mean,prob=T,main="T with n=5",
+     col="green",border="red")
+x1 <- seq(min(t.5.mean),max(t.5.mean),length=1000)
+y1 <- dnorm(x1,mean=0,sd=sqrt(10/8)/sqrt(5))
+lines(x1,y1,lty=2,lwd=2,col="blue")
+
+hist(t.20.mean,prob=T,main="T with n=20",
+     col="green",border="red")
+x2 <- seq(min(t.20.mean),max(t.20.mean),length=1000)
+y2 <- dnorm(x2,mean=0,sd=sqrt(10/8)/sqrt(20))
+lines(x2,y2,lty=2,lwd=2,col="blue")
+
+hist(t.40.mean,prob=T,main="T with n=40",
+     col="green",border="red")
+x3 <- seq(min(t.40.mean),max(t.40.mean),length=1000)
+y3 <- dnorm(x3,mean=0,sd=sqrt(10/8)/sqrt(40))
+lines(x3,y3,lty=2,lwd=2,col="blue")
+
+hist(t.160.mean,prob=T,main="T with n=160",
+     col="green",border="red")
+x4 <- seq(min(t.160.mean),max(t.160.mean),length=1000)
+y4 <- dnorm(x4,mean=0,sd=sqrt(10/8)/sqrt(160))
+lines(x4,y4,lty=2,lwd=2,col="blue")
+```
+
+
+## F Distribution
+
+```{r}
+set.seed(123)
+df1 <- 5
+df2 <- 7
+x <- seq(0,100,by=0.001)
+n <- 1000
+f.5.mean <- rep(NA,n)
+f.20.mean <- rep(NA,n)
+f.40.mean <- rep(NA,n)
+f.160.mean <- rep(NA,n)
+
+for (i in 1:n) {
+  f.5.mean[i] <- mean(rf(5,df1,df2))
+  f.20.mean[i] <- mean(rf(20,df1,df2))
+  f.40.mean[i] <- mean(rf(40,df1,df2))
+  f.160.mean[i] <- mean(rf(160,df1,df2))
+}
+
+options(digits=4)
+c(mean(f.5.mean),sd(f.5.mean))
+c(mean(f.20.mean),sd(f.20.mean))
+c(mean(f.40.mean),sd(f.40.mean))
+c(mean(f.160.mean),sd(f.160.mean))
+
+par(mfrow=c(2,2))
+
+hist(f.5.mean,prob=T,main="F with n=5",
+     col="brown",border="red")
+x1 <- seq(min(f.5.mean),max(f.5.mean),length=1000)
+y1 <- dnorm(x1,mean=7/5,sd=sqrt((2*7^2*(5+7-2))/(5*(7-2)^2*(7-3)))/sqrt(5))
+lines(x1,y1,lty=2,lwd=2,col="blue")
+
+hist(f.20.mean,prob=T,main="F with n=20",
+     col="brown",border="red")
+x2 <- seq(min(f.20.mean),max(f.20.mean),length=1000)
+y2 <- dnorm(x2,mean=7/5,sd=sqrt((2*7^2*(5+7-2))/(5*(7-2)^2*(7-3)))/sqrt(20))
+lines(x2,y2,lty=2,lwd=2,col="blue")
+
+hist(f.40.mean,prob=T,main="F with n=40",
+     col="brown",border="red")
+x3 <- seq(min(f.40.mean),max(f.40.mean),length=1000)
+y3 <- dnorm(x3,mean=7/5,sd=sqrt((2*7^2*(5+7-2))/(5*(7-2)^2*(7-3)))/sqrt(40))
+lines(x3,y3,lty=2,lwd=2,col="blue")
+
+hist(f.160.mean,prob=T,main="F with n=160",
+     col="brown",border="red")
+x4 <- seq(min(f.160.mean),max(f.160.mean),length=1000)
+y4 <- dnorm(x4,mean=7/5,sd=sqrt((2*7^2*(5+7-2))/(5*(7-2)^2*(7-3)))/sqrt(160))
+lines(x4,y4,lty=2,lwd=2,col="blue")
+```
+
