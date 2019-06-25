@@ -1,5 +1,4 @@
 setwd("D:/Workplace/Statistical_Analysis_R/ch06")
-
 data <- read.csv("2016.6th.csv",header=T)
 str(data)
 
