@@ -87,7 +87,13 @@ t.test(data$weight~data$gender,mu=0,alternative="less",
 
 # Ex 7-2
 
+install.packages("PairedData")
+library(PairedData)
+install.packages("psych")
+library(psych)
 anorexia <- read.csv("data/01.anorexia.csv",header=T)
+summary(anorexia)
+describe(anorexia)
 attach(anorexia)
 shapiro.test(Prior-Post)
 n <- length(Prior-Post)
@@ -95,3 +101,8 @@ m <- mean(Prior-Post)
 s <- sd(Prior-Post)
 ( t.t <- m/(s/sqrt(n)) )
 t.test(Prior,Post,paired=T,alternative="less")
+
+
+# Ex 7-3
+
+
