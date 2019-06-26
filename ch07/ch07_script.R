@@ -65,3 +65,33 @@ install.packages("doBy")
 library(doBy)
 summaryBy(age~scale,data=ad,FUN=c(length))
 summaryBy(age~scale,data=ad,FUN=c(mean,sd),na.rm=T)
+
+
+# Ex 7-1
+
+data <- read.table("data/chapter7.txt",header=T)
+boy <- subset(data,gender==1)
+girl <- subset(data,gender==2)
+shapiro.test(boy$weight)
+shapiro.test(girl$weight)
+qqnorm(boy$weight) ; qqline(boy$weight)
+qqnorm(girl$weight) ; qqline(girl$weight)
+
+kruskal.test(weight~gender,data) # Kruskal-Wallis test
+
+# Assume normality
+var.test(data$weight~data$gender)
+t.test(data$weight~data$gender,mu=0,alternative="less",
+       var.equal=T)
+
+
+# Ex 7-2
+
+anorexia <- read.csv("data/01.anorexia.csv",header=T)
+attach(anorexia)
+shapiro.test(Prior-Post)
+n <- length(Prior-Post)
+m <- mean(Prior-Post)
+s <- sd(Prior-Post)
+( t.t <- m/(s/sqrt(n)) )
+t.test(Prior,Post,paired=T,alternative="less")
