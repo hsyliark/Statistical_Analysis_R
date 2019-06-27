@@ -105,4 +105,64 @@ t.test(Prior,Post,paired=T,alternative="less")
 
 # Ex 7-3
 
+ad <- read.csv("data/age.data.csv",header=T)
+ad$scale <- as.factor(ad$scale)
 
+y1 <- ad$age[ad$scale=="1"]
+y2 <- ad$age[ad$scale=="2"]
+y3 <- ad$age[ad$scale=="3"]
+
+y1.mean <- mean(y1)
+y2.mean <- mean(y2)
+y3.mean <- mean(y3)
+
+sse.1 <- sum((y1-y1.mean)^2)
+sse.2 <- sum((y2-y2.mean)^2)
+sse.3 <- sum((y3-y3.mean)^2)
+
+( sse <- sse.1+sse.2+sse.3 )
+( dfe <- (length(y1)-1)+(length(y2)-1)+(length(y3)-1) )
+
+y <- mean(ad$age)
+
+sst.1 <- length(y1)*sum((y1.mean-y)^2)
+sst.2 <- length(y2)*sum((y2.mean-y)^2)
+sst.3 <- length(y3)*sum((y3.mean-y)^2)
+
+( sst <- sst.1+sst.2+sst.3 )
+( dft <- length(levels(ad$scale))-1 )
+
+( tsq <- sum((ad$age-y)^2) )
+( ss <- sst+sse )
+
+mst <- sst/dft
+mse <- sse/dfe
+(f.t <- mst/mse)
+
+alpha <- 0.05
+(tol <- qf(1-alpha,2,147))
+
+(p.value <- 1-pf(f.t,2,147))
+
+ow <- lm(age~scale,data=ad)
+anova(ow)
+oneway.test(age~scale,data=ad,var.equal=T)
+
+out <- aov(ow)
+summary(out)
+(ph <- TukeyHSD(out))
+plot(ph)
+
+pairwise.t.test(ad$age,ad$scale,p.adj="none")
+
+install.packages("multcomp")
+library(multcomp)
+install.packages("agricolae") # Duncan, Scheffe test
+library(agricolae)
+
+duncan.test(out,"scale",alpha=0.05,group=T,console=T)
+install.packages("laercio")
+library(laercio) 
+LDuncan(out,"scale")
+
+scheffe.test(out,"scale",alpha=0.05,group=T,console=T)
