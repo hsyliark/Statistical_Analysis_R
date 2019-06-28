@@ -135,3 +135,40 @@ step(fit1,direction="both") # stepwise regression
 
 install.packages("leaps")
 library(leaps)
+subsets1 <- regsubsets(Murder~.,data=states,
+                      method='seqrep',nbest=4) # all possible regression
+summary(subsets1)
+plot(subsets1)
+subsets2 <- regsubsets(Murder~.,data=states,
+                      method='exhaustive',nbest=4)
+summary(subsets2)
+plot(subsets2)
+
+require(car)
+subsets(subsets1,statistic="cp",main="Cp Plot for All Subsets Regression")
+abline(1,1,lty=2,col="red")
+subsets(subsets2,statistic="cp",main="Cp Plot for All Subsets Regression")
+abline(1,1,lty=2,col="blue")
+
+
+## Logistic
+
+data <- read.csv("http://stats.idre.ucla.edu/stat/data/binary.csv")
+str(data)
+head(data)
+
+data$rank <- as.factor(data$rank)
+str(data)
+
+train <- data[1:200,]
+test <- data[201:400,]
+model1 <- glm(admit~.,data=data,family="binomial")
+summary(model1)
+model2 <- glm(admit~gpa+rank,data=data,family="binomial")
+summary(model2)
+
+AIC(model1,model2)
+
+par(mfrow=c(2,2))
+plot(model1)
+par(mfrow=c(1,1))
