@@ -41,3 +41,97 @@ sxx <- sum((hf.son$Father-mean.x)^2)
 summary(res)
 anova(res)
 str(res)
+names(res)
+
+par(mfrow=c(2,2))
+plot(res)
+par(mfrow=c(1,1))
+
+qqnorm(res$residuals) ; qqline(res$residuals)
+shapiro.test(res$residuals)
+
+plot(hf.son$Father,res$residuals,
+     ylab="Residuals",xlab="Father's height",main="Residual analysis") 
+abline(0,0)
+
+install.packages("lmtest")
+library(lmtest)
+(res2 <- dwtest(res))
+names(res2)
+
+
+# Ex 9-3
+
+women <- women
+str(women)
+attach(women)
+plot(height,weight,type="p",col="blue",lwd=2,main="Women data")
+
+(fit <- lm(weight~height,data=women))
+summary(fit)
+cor.test(weight,height)
+plot(weight~height,data=women)
+abline(fit,col="red")
+title(expression(italic(weight==3.45%*%height-87.52)))
+
+par(mfrow=c(2,2))
+plot(fit)
+par(mfrow=c(1,1))
+
+shapiro.test(fit$residuals) # 정규성
+install.packages("gvlma")
+library(gvlma)
+(gvmodel <- gvlma(fit)) # 선형성
+summary(gvmodel)
+
+(fit2 <- lm(weight~height+I(height^2),data=women))
+summary(fit2)
+par(mfrow=c(2,2))
+plot(fit2)
+par(mfrow=c(1,1))
+plot(weight~height,data=women)
+lines(height,fitted(fit2),col="green")
+title(expression(italic(weight==-7.348%*%height+0.083%*%height^2+261.878)))
+
+(newfit <- lm(weight~ height + I(height^2), data=women[-c(13,15),]))
+summary(newfit)
+
+AIC(fit,fit2)
+
+# 참고 : https://rstudio-pubs-static.s3.amazonaws.com/190997_40fa09db8e344b19b14a687ea5de914b.html
+
+
+## Multiple
+
+state.x77 <- state.x77
+states <- as.data.frame(state.x77[,c("Murder","Population",
+                                     "Illiteracy","Income","Frost")])
+(fit1 <- lm(Murder~.,data=states))
+summary(fit1)
+par(mfrow=c(2,2))
+plot(fit1)
+par(mfrow=c(1,1))
+
+summary(gvlma(fit1))
+shapiro.test(fit1$residuals)
+
+install.packages("car")
+library(car)
+vif(fit1) # VIF
+sqrt(vif(fit1))>2
+
+(fit2 <- lm(Murder~Population+Illiteracy,data=states))
+summary(fit2)
+
+AIC(fit1,fit2)
+
+step(fit1,direction="backward") # backward elimination
+fit3 <- lm(Murder~1,data=states)
+step(fit3,direction="forward",
+     scope=~Population+Illiteracy+Income+Frost) # forward selection
+step(fit3,direction="forward",
+     scope=list(upper=fit1,lower=fit3))
+step(fit1,direction="both") # stepwise regression
+
+install.packages("leaps")
+library(leaps)
