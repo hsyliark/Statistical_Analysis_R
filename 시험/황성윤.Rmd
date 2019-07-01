@@ -1,0 +1,298 @@
+---
+title: "7월 1일 시험"
+author: "황 성 윤"
+date: '2019 7 1 '
+output: html_document
+---
+
+
+## Q1 다음의 값을 R 내장함수를 이용하여 구하시오.
+
+### 1) 시행횟수가 6이고 성공확률이 1/3인 이항분포에서 성공횟수가 3이 될 확률
+```{r}
+dbinom(3,size=6,prob=1/3)
+```
+정답 : 약 0.2195
+### 2) 평균이 170이고 표준편차가 6인 정규분포에서 상위 20%인 사람들의 키 범위
+```{r}
+qnorm(0.8,mean=170,sd=6)
+```
+정답 : 약 175.05 이상
+### 3) 자유도가 3인 카이제곱분포에서 누적확률이 95%일 때의 값
+```{r}
+qchisq(0.95,df=3)
+```
+정답 : 약 7.8147
+### 4) 자유도가 2인 t분포에서 누적확률이 0.975일 때의 값
+```{r}
+qt(0.975,df=2)
+```
+정답 : 약 4.303
+### 5) 표준정규분포에서 확률변수의 값이 1일 때의 누적확률
+```{r}
+pnorm(1,mean=0,sd=1)
+```
+정답 : 약 0.8413
+
+
+## 2. 다음의 문항이 베르누이 시행인지 판단하시오. 
+
+### 1) 영화관에서 줄을 기다리는 시간 -> no
+### 2) 전화가 왔을 때, 전화를 한 사람이 여자인지 측정 -> yes
+### 3) 주사위를 한 번 던졌을 때, 나오는 숫자 체크 -> no
+### 4) 동전의 앞면이 위로 향하고 있는지 체크 -> yes
+### 5) 사람의 눈이 녹색인지 체크 -> no
+
+
+## 3. R 내장 데이터 iris를 이용하여 setosa 종 Sepal.Length의 모평균에 대한 95% 신뢰구간을 구하시오. 
+```{r}
+iris <- iris
+library(dplyr)
+setosa <- iris %>%
+  filter(Species=="setosa")
+setosa$Sepal.Length
+shapiro.test(setosa$Sepal.Length)
+qqnorm(setosa$Sepal.Length) ; qqline(setosa$Sepal.Length)
+```
+정규성 검정 결과 p-value의 값이 0.4595로 유의수준 0.05보다 크다. 따라서 setosa 종 Sepal.Length는 정규분포를 따른다고 볼 수 있다. 이에 따라 모평균에 대한 95% 신뢰구간을 구하면 다음과 같다.
+```{r}
+(x.bar <- mean(setosa$Sepal.Length))
+(sd.bar <- sd(setosa$Sepal.Length))
+(alpha <- 0.05)
+(z <- qnorm(1-(alpha/2)))
+(n <- length(setosa$Sepal.Length))
+ll <- x.bar-z*sd.bar/sqrt(n)
+ul <- x.bar+z*sd.bar/sqrt(n)
+(c.l <- c(ll,ul))
+```
+정답 : 약 4.908 ~ 약 5.104
+
+
+## 4. 한 농구선수가 자유투를 던지면 10번 중 7번을 성공한다고 할 때, 다음 물음에 답하시오. 
+
+### 1) 자유투를 10번 던져서 9번 이상 성공할 확률
+성공한 자유투 수를 X라 하면 X ~ B(10,0.7) 이다.
+```{r}
+1-pbinom(8,size=10,prob=0.7)
+```
+정답 : 약 0.1493
+### 2) 자유투를 10번 던져서 5번 이상 8번 이하로 성공할 확률
+```{r}
+pbinom(8,size=10,prob=0.7)-pbinom(4,size=10,prob=0.7)
+```
+정답 : 약 0.8033
+
+
+## 5. 2006년 조사에 의하면 한국인의 1인 1일 평균 알코올 섭취량은 8.1g이다. 2008년 무작위로 뽑은 알코올 섭취량이 다음과 같을 때 평균 알코올 섭취량이 달라졌는지 검정하시오.
+## 16.90,13.21,15.67,9.87,13.15,9.98,3.56,14.50,8.12,6.97
+
+Hypothesis <br>
+H0 : mu==8.1 v.s H1 : mu!=8.1
+우선 데이터를 생성하고 정규성을 검정해본다.
+```{r}
+alcohol <- c(16.90,13.21,15.67,9.87,13.15,9.98,3.56,14.50,8.12,6.97)
+shapiro.test(alcohol)
+qqnorm(alcohol) ; qqline(alcohol)
+```
+검정결과, p-value의 값이 0.818로 유의수준 0.05보다 크다. 따라서 알코올 섭취량을 정규분포를 따른다고 볼 수 있다. 또한 표본크기 30 미만의 소표본이므로 one-sample T-Test를 수행하면 다음과 같다.
+```{r}
+t.test(alcohol,mu=8.1)
+```
+검정결과, p-value의 값이 약 0.0456으로 유의수준 0.05보다 작다. 따라서 귀무가설을 기각하게 되고, 이에 따라 평균 알코올 섭취량이 달라졌다고 볼 수 있다.
+
+## 6. 정규분포에서 from <= X <= to 의 확률을 구하는 함수 rangenorm(from,to,mean,sd)을 작성하고 rangenorm(-1.96,1.96,0,1)을 구하시오. 
+
+```{r}
+rangenorm <- function(from,to,mean,sd) {
+  prob <- pnorm(to,mean,sd)-pnorm(from,mean,sd)
+  return(prob)
+}
+rangenorm(-1.96,1.96,0,1)
+```
+
+
+## 7. mpg 데이터셋에서 다음을 검정해보시오. 
+
+### 1) subcompact 자동차와 midsize 자동차의 도시연비
+데이터 전처리
+```{r}
+library(ggplot2)
+require(dplyr)
+mpg <- mpg
+mpg1 <- mpg %>%
+  filter(class %in% c("subcompact","midsize"))
+mpg1$cty[mpg1$class=="subcompact"]
+mpg1$cty[mpg1$class=="midsize"]
+```
+Group1 : class=="subcompact" / Group2 : class=="midsize" <br>
+Hypothesis <br>
+H0 : mu1==mu2 v.s H1 : mu1!=mu2 <br>
+우선, 각 집단에 대한 도시 연비(cty)가 정규성을 나타내는지 검정해본다.
+```{r}
+shapiro.test(mpg1$cty[mpg1$class=="subcompact"])
+qqnorm(mpg1$cty[mpg1$class=="subcompact"]) ; qqline(mpg1$cty[mpg1$class=="subcompact"])
+```
+```{r}
+shapiro.test(mpg1$cty[mpg1$class=="midsize"])
+qqnorm(mpg1$cty[mpg1$class=="midsize"]) ; qqline(mpg1$cty[mpg1$class=="midsize"])
+```
+검정결과, 두 집단 모두 p-value의 값이 약 0.018로 유의수준 0.05보다 작다. 따라서 정규분포를 따른다고 볼 수 없으므로 관측치의 순위와 부호를 이용하는 비모수 검정인 Wilcoxon rank sum test를 실시한다.
+```{r}
+wilcox.test(mpg1$cty~mpg1$class)
+```
+검정결과, p-value의 값이 0.1748이고 이는 유의수준 0.05보다 크다. 따라서 귀무가설을 기각하지 못하고, 이에 따라 subcompact 자동차와 midsize 자동차의 도시 연비는 차이가 없다고 결론내린다. <br>
+만약, 두 집단의 도시 연비가 모두 정규분포를 따른다는 가정이 주어졌다고 해보자. 이때는 우선 두 집단의 등분산성을 검정(F-test)해본다. <br>
+Hypothesis <br>
+H0 : sigma1==sigma2 v.s H1 : sigma1!=sigma2 <br>
+```{r}
+var.test(mpg1$cty~mpg1$class)
+```
+검정결과, p-value의 값이 매우 작은 값이다. 따라서 두 집단의 분산이 같다고 볼 수 없고, 이에 따라 이분산을 가정한 Welch's two-sample T-Test를 실시한다.
+```{r}
+t.test(mpg1$cty~mpg1$class,var.equal=F)
+```
+검정결과, p-value의 값이 약 0.059이고 이는 유의수준 0.05보다 크다. 따라서 귀무가설을 기각하지 못하고, 이에 따라 subcompact 자동차와 midsize 자동차의 도시 연비는 차이가 없다고 결론내린다. <br>
+
+### 2) 일반 휘발유(r)와 고급 휘발유(p)의 고속도로 연비
+데이터 전처리
+```{r}
+library(ggplot2)
+require(dplyr)
+mpg2 <- mpg %>%
+  filter(fl %in% c("r","p"))
+mpg2$hwy[mpg1$fl=="r"]
+mpg2$hwy[mpg1$fl=="p"]
+```
+Group1 : fl=="r" / Group2 : fl=="p" <br>
+Hypothesis <br>
+H0 : mu1==mu2 v.s H1 : mu1!=mu2 <br>
+우선, 각 집단에 대한 고속도로 연비(hwy)가 정규성을 나타내는지 검정해본다.
+```{r}
+shapiro.test(mpg2$hwy[mpg1$fl=="r"])
+qqnorm(mpg2$hwy[mpg1$fl=="r"]) ; qqline(mpg2$hwy[mpg1$fl=="r"])
+```
+```{r}
+shapiro.test(mpg2$hwy[mpg1$fl=="p"])
+qqnorm(mpg2$hwy[mpg1$fl=="p"]) ; qqline(mpg2$hwy[mpg1$fl=="p"])
+```
+검정결과, 두 집단 모두 p-value의 값이 유의수준 0.05보다 작다. 따라서 정규분포를 따른다고 볼 수 없으므로 관측치의 순위와 부호를 이용하는 비모수 검정인 Wilcoxon rank sum test를 실시한다.
+```{r}
+wilcox.test(mpg2$hwy~mpg2$fl)
+```
+검정결과, p-value의 값이 약 0.0085이고 이는 유의수준 0.05보다 작다. 따라서 귀무가설을 기각하지 못하고, 이에 따라 일반휘발유(r) 자동차와 고급휘발유(p) 자동차의 도시 연비는 차이가 있다고 결론내린다. <br>
+만약, 두 집단의 고속도로 연비가 모두 정규분포를 따른다는 가정이 주어졌다고 해보자. 이때는 우선 두 집단의 등분산성을 검정(F-test)해본다. <br>
+Hypothesis <br>
+H0 : sigma1==sigma2 v.s H1 : sigma1!=sigma2 <br>
+```{r}
+var.test(mpg2$hwy~mpg2$fl)
+```
+검정결과, p-value의 값이 매우 작은 값이다. 따라서 두 집단의 분산이 같다고 볼 수 없고, 이에 따라 이분산을 가정한 Welch's two-sample T-Test를 실시한다.
+```{r}
+t.test(mpg2$hwy~mpg2$fl,var.equal=F)
+```
+검정결과, p-value의 값이 약 0.0016이고 이는 유의수준 0.05보다 작다. 따라서 귀무가설을 기각하지 못하고, 이에 따라 일반휘발유(r) 자동차와 고급휘발유(p) 자동차의 도시 연비는 차이가 있다고 결론내린다. <br>
+
+
+## 8. 멘델의 유전법칙을 확인하기 위해 실험을 통해 완두콩의 형질을 확인한 결과 둥글고 황색, 둥글고 녹색, 주름지고 황색, 주름지고 녹색 순으로 322, 109, 99, 29 개가 나타났다. 이 결과가 멘델의 법칙 비율인 9:3:3:1 에 맞는지 검정하시오.
+
+Hypothesis <br>
+H0 : p1=9/16, p2=3/16, p3=3/16, p4=1/16 v.s H1 : not H0
+```{r}
+mendel <- c(322,109,99,29)
+chisq.test(mendel,p=c(9,3,3,1)/16)
+```
+검정결과, p-value의 값이 0.6413이고 이는 유의수준 0.05보다 크다. 따라서 귀무가설을 기각하지 못하고, 이에 따라 실험결과는 멘델의 법칙을 따른다고 결론내린다.
+
+
+## 9. R 내장 데이터인 "women"을 이용하여 다음을 구하시오.
+## 키(height)와 몸무게(weight)의 곡선회귀분석을 통한 2차 회귀식
+
+```{r}
+women <- women
+plot(x=women$height,y=women$weight,xlab="키",ylab="몸무게",main="Weight V.S Height")
+cor.test(women$weight,women$height)
+```
+산점도와 상관관계 검정결과를 보면 키와 몸무게는 강한 양의 상관관계를 보이고 있다. 또한, 이는 매우 유의하다고 보여진다. <br>
+여기에서는 독립변수를 몸무게로 설정하고 회귀식을 구하도록 하겠다. 우선 단순선형회귀모형을 생각해보면 다음과 같다. <br>
+
+### 1) Simple regression model
+```{r}
+(fit1 <- lm(weight~height,data=women))
+summary(fit1)
+```
+ANOVA table에 따르면 키는 몸무게에 유의한 영향을 미치고 있다고 보여진다. 그렇다면 fit1이 기본가정인 등분산성, 정규성, 선형성, 독립성을 만족하고 있는지 확인해보자.
+
+### 2) Checking assumptions
+```{r}
+par(mfrow=c(2,2))
+plot(fit1)
+par(mfrow=c(1,1))
+```
+위의 4가지 그래프에 의하면, 이상치가 존재하고 선형성, 등분산성, 독립성이 의심가는 상황이다.
+
+#### 1)) 정규성
+먼저 잔차에 대한 정규성을 Shapiro-Wilk 검정법을 통해 실시해본다.
+```{r}
+shapiro.test(fit1$residuals)
+qqnorm(fit1$residuals) ; qqline(fit1$residuals)
+```
+검정결과, p-value의 값이 0.1866으로 유의수준 0.05보다 크다. 따라서 정규성을 만족하는 것으로 볼 수 있다.
+
+#### 2)) 선형성, 등분산성
+여기에서는 패키지 gvlma에 있는 함수 gvlma를 이용해 검정해보도록 하겠다. 실행결과에서 Global test는 선형성에 대한 검정이고 Heteroscedasticity는 등분산성에 대한 검정이다.
+```{r}
+library(gvlma)
+gvmodel1 <- gvlma(fit1)
+summary(gvmodel1)
+```
+검정결과, 선형성(Global test)에 대한 p-value는 약 0.0023으로 유의수준 0.05보다 작고, 등분산성(Heteroscedasticity)에 대한 p-value는 0.3695으로 유의수준 0.05보다 크다. 따라서 선형성은 만족하지 못하고 등분산성은 만족한다고 볼 수 있다.
+
+#### 3)) 독립성
+독립성 검정에는 보통 Durbin-Watson 검정법을 사용하게 되며, 다음과 같은 기준으로 독립성을 판단한다. 
+DW statistic == 2 –> 독립 (row==0) DW statistic == 0 –> 양의 자기상관 (row==1) DW statistic == 4 –> 음의 자기상관 (row==-1)
+```{r}
+library(car)
+durbinWatsonTest(fit1)
+```
+검정결과, p-value의 값이 매우 작다. 따라서 독립성은 만족한다고 볼 수 없다. <br>
+
+결과적으로, 모형 fit1은 회귀모형의 기본가정을 만족하지 못한다. 다만, 키와 몸무게에 대한 산점도와 fit1에 대한 4가지 그래프를 통해 선형관계가 아닌 2차식과 관련한 관계가 있다고 판단되므로 2차식 회귀모형 fit2를 구축해보겠다. <br>
+
+### 3) Polynomial regression 
+```{r}
+(fit2 <- lm(weight~height+I(height^2),data=women))
+summary(fit2)
+```
+ANOVA table에 의하면 모형 fit2는 상당히 유의하다고 보여진다. 이에 대한 회귀식은 다음과 같이 나타낼 수 있다. <br>
+weight.hat = 261.87818 - 7.34832 * height + 0.08306 * height^2 <br>
+다만, 독립변수에 있는 1차항과 2차항은 동일한 변수를 사용하였으므로 다중공선성이 의심가는 상황이다. 이에 따라 분산팽창계수(variance inflation factor, VIF)를 구해보도록 한다.
+```{r}
+require(car)
+vif(fit2)
+vif(fit2)>10
+```
+분석결과, 분산팽창계수가 모두 10보다 크므로 다중공선성이 존재한다고 볼 수 있다. 이러한 문제점을 보완하기 위해 데이터를 표준화시킨 다음 모형 fit3을 구축해보고 이에 대한 분산팽창계수를 살펴보도록 한다.
+```{r}
+women1 <- as.data.frame(scale(women))
+(fit3 <- lm(weight~height+I(height^2),data=women1))
+summary(fit3)
+require(car)
+vif(fit3)
+vif(fit3)>10
+```
+분석결과, 분산팽창계수가 10 미만으로 줄어든 것을 확인할 수 있고, 이에 따라 다중공선성 문제를 어느정도 보완했다고 볼 수 있다.
+```{r}
+par(mfrow=c(2,2))
+plot(fit3)
+par(mfrow=c(1,1))
+shapiro.test(fit3$residuals)
+qqnorm(fit3$residuals) ; qqline(fit3$residuals)
+library(gvlma)
+gvmodel3 <- gvlma(fit3)
+summary(gvmodel3)
+library(car)
+durbinWatsonTest(fit3)
+```
+다만, 아직도 선형성과 독립성에 대한 가정은 만족하지 못하는 상황이다. 따라서 좀 더 합리적인 모형에 대한 연구는 변수변환이나 비모수 회귀 등을 이용하여 더 진행해봐야 할 것 같다.
+
+
