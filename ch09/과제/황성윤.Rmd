@@ -1,5 +1,5 @@
 ---
-title: "6월 28일 과제"
+title: "6월 28일 과제" 
 author: "황 성 윤"
 date: '2019 6 28 '
 output: html_document
